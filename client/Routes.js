@@ -4,6 +4,7 @@ import {withRouter, Route, Switch, Redirect} from 'react-router-dom'
 import { Login, Signup } from './components/AuthForm';
 import BubbleGame from './components/BubbleGame';
 import Home from './components/Home';
+import ShoppingMall from './components/ShoppingMall';
 import {me} from './store'
 
 /**
@@ -23,12 +24,15 @@ class Routes extends Component {
           <Switch>
             <Route path="/home" component={Home} />
             <Route path="/bubblegame" component={BubbleGame} />
+            <Route path="/shoppingmall" component={ShoppingMall} />
             <Redirect to="/home" />
           </Switch>
         ) : (
           <Switch>
             <Route path='/' exact component={Home} />
             <Route path='/home' exact component={Home} />
+            <Route path="/bubblegame" component={BubbleGame} />
+            <Route path="/shoppingmall" component={ShoppingMall} />
             <Route path="/login" component={Login} />
             <Route path="/signup" component={Signup} />
           </Switch>
