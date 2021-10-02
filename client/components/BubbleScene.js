@@ -1,114 +1,175 @@
 import Phaser from "phaser";
 
 var plateform;
-var downform;
-var player;
+var launcher;
 var cursors;
-var treasure;
 var score = 0;
 var scoreText;
+
+var bubbles;
+var launchedBubble;
+var launchedBubbles;
+
+var stats;
+var speed;
+var lastFired = 0;
+var isDown = false;
+var mouseX = 0;
+var mouseY = 0;
+
 
 export default class BubbleScene extends Phaser.Scene{
 
   preload() {
-    this.load.image('background', 'assets/background.jpg')
-    this.load.image('landDown', 'assets/landDown.png')
-    this.load.image('plateform-01', 'assets/plateform-01.png')
-    this.load.image('plateform-02', 'assets/plateform-02.png')
-    this.load.image('plateform-03', 'assets/plateform-03.png')
-    this.load.image('treasure', 'assets/treasure.png')
-    this.load.image('showScore', 'assets/showScore.png')
-    this.load.image('failScore', 'assets/failScore.png')
-    this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 })
+    this.load.image('gameInterface', 'assets/background.jpg')
+    this.load.image('plateform', 'assets/plateform.png')
+    this.load.image('launcher', 'assets/launcher.png')
+    this.load.image('blueBubble', 'assets/blueBubble.png')
+    this.load.image('redBubble', 'assets/redBubble.png')
+    this.load.image('yellowBubble', 'assets/yellowBubble.png')
+    this.load.image('greenBubble', 'assets/greenBubble.png')
+    // this.load.spritesheet('launcher', 'assets/launcher.png', { frameWidth: 180, frameHeight: 137 })
   }
 
   create() {
-    this.add.image(600, 350, 'background');
+    this.add.image(630, 290, 'gameInterface');
 
     plateform = this.physics.add.staticGroup();
-    plateform.create(100, 480, 'plateform-01');
-    plateform.create(300, 550, 'plateform-02');
-    plateform.create(600, 380, 'plateform-03');
-    plateform.create(830, 250, 'plateform-02');
-    plateform.create(1000, 500, 'plateform-01');
-    plateform.create(1130, 400, 'plateform-02');
-
-    player = this.physics.add.sprite(50, 400, 'dude').setScale(1.5);
-    player.setBounce(0.2);
-    player.setCollideWorldBounds(true);
-
-    this.anims.create({
-      key: 'left',
-      frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
-      frameRate: 10,
-      repeat: -1
-    })
-    this.anims.create({
-      key: 'turn',
-      frames: [{ key: 'dude', frame: 4 }],
-      frameRate: 20,
-    })
-    this.anims.create({
-      key: 'right',
-      frames: this.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
-      frameRate: 10,
-      repeat: -1
-    })
-
-    treasure = this.physics.add.staticGroup()
-    treasure.create(280, 430, 'treasure');
-    treasure.create(550, 100, 'treasure');
-    treasure.create(850, 190, 'treasure');
-    treasure.create(1080, 455, 'treasure');
-    treasure.create(1150, 340, 'treasure');
-    treasure.children.iterate(child => child.setScale(0.5).refreshBody())
+    plateform.create(400, 290, 'plateform');
+    plateform.create(860, 290, 'plateform');
 
     cursors = this.input.keyboard.createCursorKeys();
+    scoreText = this.add.text(200, 16, 'Score: 0', { fontSize: '32px', fill: '#000' })
 
-    scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000' })
+    launcher = this.physics.add.sprite(630, 511, 'launcher');
+    launcher.setCollideWorldBounds(true);
 
-    downform = this.physics.add.staticGroup()
-    downform.create(600, 695, 'landDown')
 
-    this.physics.add.collider(player, plateform);
-    this.physics.add.collider(treasure, plateform);
-    this.physics.add.overlap(player, treasure, collectTreasure, null, this)
-    this.physics.add.collider(player, downform, hitDown, null, this)
+    // Bubble
+    var allBubbles = ['redBubble', 'yellowBubble', 'blueBubble', 'greenBubble'];
+    var Bubble = new Phaser.Class({
+      Extends: Phaser.GameObjects.Image,
+      initialize:
+      function Bubble(scene) {
+        Phaser.GameObjects.Image.call(this, scene, 0, 0, allBubbles[[Math.floor(Math.random() * 4)]]);
+        this.incX = 0;
+        this.incY = 0;
+        this.lifespan = 0;
+        this.speed = Phaser.Math.GetSpeed(1500, 1);
+      },
+      fire: function (x, y) {
+        this.setActive(true);
+        this.setVisible(true);
 
-    function collectTreasure(player, treasure) {
-      treasure.disableBody(true, true);
-      score += 10;
-      scoreText.setText(`Score: ${score}`);
+        this.setPosition(630, 532);
 
-      if (score === 50) {
-        this.physics.pause();
-        this.add.image(600, 350, 'showScore');
-        this.add.text(250, 280, `    Success!\nYour score is ${score}`, { fontSize: '64px', fill: '#000' })
+        var angle = Phaser.Math.Angle.Between(x, y, 630, 532);
+
+        this.setRotation(angle);
+
+        this.incX = Math.cos(angle);
+        this.incY = Math.sin(angle);
+
+        this.lifespan = 1000;
+      },
+      update: function (time, delta) {
+        this.lifespan -= delta;
+        this.x -= this.incX * (this.speed * delta);
+        this.y -= this.incY * (this.speed * delta);
+
+        if (this.lifespan <= 0) {
+          this.setActive(false);
+          this.setVisible(false);
+        }
       }
-    }
+    });
+    launchedBubbles = this.add.group({
+      classType: Bubble,
+      maxSize: 1,
+      minSize: 1,
+      runChildUpdate: true
+    })
 
-    function hitDown(player, downform) {
-      this.physics.pause();
-      this.add.image(600, 350, 'failScore');
-      this.add.text(250, 280, `    Fail...\nYour score is ${score}`, { fontSize: '64px', fill: '#fff' })
+    launchedBubbles.children.iterate(child => {
+      child.setCollideWorldBounds(true);
+      child.setBounce(3)
+    })
+
+    speed = Phaser.Math.GetSpeed(300, 1);
+
+    this.input.on('pointermove', function(pointer) {
+      mouseX = pointer.x;
+      mouseY = pointer.y;
+    })
+    this.input.on('pointerup', function(pointer) {
+      isDown = false
+    })
+    this.input.on('pointerdown', function(pointer) {
+      isDown = true
+    })
+
+    var bubble = ['redBubble', 'yellowBubble', 'blueBubble', 'greenBubble'][Math.floor(Math.random() * 4)];
+    bubbles = this.physics.add.group({
+      key: bubble,
+      repeat: 8,
+      setXY: { x: 438, y: 24, stepX: 48}
+    })
+    bubbles.children.iterate(child => child.setCollideWorldBounds(true))
+
+    this.physics.add.collider(launcher, plateform);
+    this.physics.add.collider(bubbles, plateform);
+    this.physics.add.collider(launchedBubbles, plateform);
+    this.physics.add.collider(Bubble, plateform);
+    this.physics.add.collider(Bubble, bubbles, collectBubble, null, this)
+
+    function collectBubble(launchedBubbles, bubbles) {
+      if (launchedBubbles.texture.key === bubbles.texture.key) {
+        bubbles.disableBody(true, true);
+        launchedBubbles.disableBody(true, true);
+        score += 10;
+        scoreText.setText(`Score: ${score}`);
+      }
+      if (score >= 50) {
+        this.physics.pause();
+        this.add.text(330, 200, `    Success!\nYour score is ${score}`, { fontSize: '64px', fill: '#000' })
+      }
     }
 
   }
 
-  update() {
-    if (cursors.left.isDown) {
-      player.setVelocityX(-200);
-      player.anims.play('left', true);
-    } else if (cursors.right.isDown) {
-      player.setVelocityX(200);
-      player.anims.play('right', true);
-    } else {
-      player.setVelocityX(0);
-      player.anims.play('turn');
+
+
+  update(time) {
+    // Bubble
+    if (isDown && time > lastFired) {
+      var launchedBubble = launchedBubbles.get()
+      if (launchedBubble) {
+        launchedBubble.fire(mouseX, mouseY);
+        lastFired = time + 10;
+      }
     }
-    if (cursors.up.isDown && player.body.touching.down) {
-      player.setVelocityY(-280);
-    }
+
+    launcher.setRotation(Phaser.Math.Angle.Between(mouseX, mouseY, launcher.x, launcher.y) - Math.PI / 2)
+
+    // if (cursors.up.isDown) {
+    //   launchedBubble.setVelocityY(-1000);
+    // }
+    // if (cursors.left.isDown) {
+    //   launcher.setVelocityX(-200);
+    //   if (launchedBubble.y >= 532) {
+    //     launchedBubble.setVelocityX(-200);
+    //   }
+    // } else if (cursors.right.isDown) {
+    //   launcher.setVelocityX(200);
+    //   if (launchedBubble.y >= 532) {
+    //     launchedBubble.setVelocityX(200);
+    //   }
+    // } else {
+    //   launcher.setVelocityX(0);
+    //   if (launchedBubble.y >= 532) {
+    //     launchedBubble.setVelocityX(0);
+    //   }
+    // }
   }
 
 }

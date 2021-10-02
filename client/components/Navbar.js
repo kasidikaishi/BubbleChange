@@ -5,10 +5,9 @@ import {logout} from '../store'
 
 const Navbar = ({handleClick, isLoggedIn}) => (
   <div>
-    <h3>Welcome to BUBBLUE CHANGE!</h3>
     <nav>
       {isLoggedIn ? (
-        <div>
+        <div className="nav">
           <Link to="/home">Home</Link>
           <Link to="/bubblegame">Get your bubbles</Link>
           <Link to="/shoppingmall">Go to shopping</Link>
@@ -21,7 +20,7 @@ const Navbar = ({handleClick, isLoggedIn}) => (
           <div>username</div>
         </div>
       ) : (
-        <div>
+        <div className="nav">
           <Link to="/home">Home</Link>
           <Link to="/bubblegame">Get your bubbles</Link>
           <Link to="/shoppingmall">Go to shopping</Link>

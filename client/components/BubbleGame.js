@@ -3,16 +3,26 @@ import Phaser from 'phaser'
 import BubbleScene from './BubbleScene'
 
 class BubbleGame extends React.Component {
+  constructor() {
+    super()
+    this.state = {
+      game: false,
+    }
+    this.handleClick = this.handleClick.bind(this);
+  }
 
-  componentDidMount() {
+  handleClick() {
+    this.setState({
+      game: true,
+    })
     const config = {
       type: Phaser.AUTO,
-      width: 1200,
-      height: 700,
+      width: 1260,
+      height: 580,
       physics: {
         default: 'arcade',
         arcade: {
-          gravity: { y: 300 },
+          gravity: { y: 0 },
           debug: false
         }
       },
@@ -23,7 +33,10 @@ class BubbleGame extends React.Component {
 
   render() {
     return (
-      <div id="phaser-game">
+      <div>
+        {this.state.game ? '' : (
+          <button type="button" onClick={this.handleClick}>Get Your Bubbles!</button>
+        )}
       </div>
     )
   }

@@ -6,16 +6,25 @@ a {
   text-decoration: none;
 }
 
+a:hover {
+  color: #00F
+}
+
 label {
   display: block;
 }
 
 nav a {
   display: inline-block;
-  margin: 1em;
+  margin: 0.5em;
 }
 
 form div {
   margin: 1em;
   display: inline-block;
 }
+
+.nav {
+  text-align: center;
+}
+
