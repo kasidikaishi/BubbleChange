@@ -1,11 +1,24 @@
 import Phaser from "phaser";
 
 var plateform;
-var launchedBubble;
-var angle = 0;
+var launcher;
+var cursors;
 var score = 0;
 var scoreText;
-var cursors;
+
+var bubbles;
+var launchedBubble;
+var launchedBubbles;
+
+var angle = 0;
+
+var stats;
+var speed;
+var lastFired = 0;
+var isDown = false;
+var mouseX = 0;
+var mouseY = 0;
+
 
 export default class BubbleScene extends Phaser.Scene{
 
@@ -19,6 +32,7 @@ export default class BubbleScene extends Phaser.Scene{
     this.load.image('redBubble', 'assets/redBubble.png')
     this.load.image('yellowBubble', 'assets/yellowBubble.png')
     this.load.image('greenBubble', 'assets/greenBubble.png')
+    // this.load.spritesheet('launcher', 'assets/launcher.png', { frameWidth: 180, frameHeight: 137 })
   }
 
   create() {
