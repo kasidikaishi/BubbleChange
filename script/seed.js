@@ -1,6 +1,6 @@
 'use strict'
-
-const {db, models: {User} } = require('../server/db')
+const {db, models: {User, Product} } = require('../server/db')
+const clothingData = require('../clothing-data.json');
 
 /**
  * seed - this function clears the database, updates tables to
@@ -12,9 +12,33 @@ async function seed() {
 
   // Creating Users
   const users = await Promise.all([
-    User.create({ username: 'cody', password: '123' }),
+    User.create({ username: 'jiefei', password: '123' }),
     User.create({ username: 'murphy', password: '123' }),
   ])
+
+  // const productsDummyData = [
+  //   Product.create({name: 'clothing1', bubble: 300, style: 'traditional', imageUrl: clothing1}),
+  //   Product.create({name: 'clothing2', bubble: Math.floor(Math.random() * 1000), style: 'traditional', imageUrl: "clothing2.jpg"}),
+  //   Product.create({name: 'clothing3', bubble: Math.floor(Math.random() * 1000), style: 'traditional', imageUrl: "clothing3.jpg"}),
+  //   Product.create({name: 'clothing4', bubble: Math.floor(Math.random() * 1000), style: 'traditional', imageUrl: "clothing4.jpg"}),
+  //   Product.create({name: 'clothing5', bubble: Math.floor(Math.random() * 1000), style: 'traditional', imageUrl: "clothing5.jpg"}),
+  //   Product.create({name: 'clothing6', bubble: Math.floor(Math.random() * 1000), style: 'traditional', imageUrl: "clothing6.jpg"}),
+  //   Product.create({name: 'clothing7', bubble: Math.floor(Math.random() * 1000), style: 'traditional', imageUrl: "clothing7.jpg"}),
+  //   Product.create({name: 'clothing8', bubble: Math.floor(Math.random() * 1000), style: 'traditional', imageUrl: "clothing8.jpg"}),
+  //   Product.create({name: 'clothing9', bubble: Math.floor(Math.random() * 1000), style: 'traditional', imageUrl: "clothing9.jpg"}),
+  //   Product.create({name: 'clothing10', bubble: Math.floor(Math.random() * 1000), style: 'traditional', imageUrl: "clothing10.jpg"}),
+  //   Product.create({name: 'clothing11', bubble: Math.floor(Math.random() * 1000), style: 'traditional', imageUrl: "clothing11.jpg"}),
+  //   Product.create({name: 'clothing12', bubble: Math.floor(Math.random() * 1000), style: 'traditional', imageUrl: "clothing12.jpg"}),
+  //   Product.create({name: 'clothing13', bubble: Math.floor(Math.random() * 1000), style: 'traditional', imageUrl: "clothing13.jpg"}),
+  //   Product.create({name: 'clothing14', bubble: Math.floor(Math.random() * 1000), style: 'traditional', imageUrl: "clothing14.jpg"}),
+  //   Product.create({name: 'clothing15', bubble: Math.floor(Math.random() * 1000), style: 'traditional', imageUrl: "clothing15.jpg"}),
+  //   Product.create({name: 'clothing16', bubble: Math.floor(Math.random() * 1000), style: 'traditional', imageUrl: "clothing16.jpg"}),
+  //   Product.create({name: 'clothing17', bubble: Math.floor(Math.random() * 1000), style: 'traditional', imageUrl: "clothing17.jpg"}),
+  //   Product.create({name: 'clothing18', bubble: Math.floor(Math.random() * 1000), style: 'traditional', imageUrl: "clothing18.jpg"}),
+  //   Product.create({name: 'clothing19', bubble: Math.floor(Math.random() * 1000), style: 'traditional', imageUrl: "clothing19.jpg"}),
+  // ]
+
+  const products = await Promise.all(clothingData.map(clothing => Product.create(clothing)))
 
   console.log(`seeded ${users.length} users`)
   console.log(`seeded successfully`)

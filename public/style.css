@@ -28,3 +28,30 @@ form div {
   text-align: center;
 }
 
+.all-products {
+  width: 90%;
+  max-width: 1240px;
+  margin: 30px auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto;
+  grid-gap: 20px;
+}
+
+@media (min-width: 600px) {
+  .all-products {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 800px) {
+  .all-products {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1000px) {
+  .all-products {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

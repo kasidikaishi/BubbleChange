@@ -23,8 +23,8 @@ class Routes extends Component {
         {isLoggedIn ? (
           <Switch>
             <Route path="/home" component={Home} />
-            <Route path="/bubblegame" component={BubbleGame} />
-            <Route path="/shoppingmall" component={ShoppingMall} />
+            <Route path="/bubblegame/:id" component={BubbleGame} />
+            <Route path="/shoppingmall/:id" component={ShoppingMall} />
             <Redirect to="/home" />
           </Switch>
         ) : (
@@ -49,6 +49,7 @@ const mapState = state => {
   return {
     // Being 'logged in' for our purposes will be defined has having a state.auth that has a truthy id.
     // Otherwise, state.auth will be an empty object, and state.auth.id will be falsey
+    userId: state.auth.id,
     isLoggedIn: !!state.auth.id
   }
 }

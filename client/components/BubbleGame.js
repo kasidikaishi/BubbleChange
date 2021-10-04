@@ -1,6 +1,7 @@
 import React from 'react'
 import Phaser from 'phaser'
 import BubbleScene from './BubbleScene'
+// import Flood from './ColorBubble'
 
 class BubbleGame extends React.Component {
   constructor() {
@@ -18,7 +19,7 @@ class BubbleGame extends React.Component {
     const config = {
       type: Phaser.AUTO,
       width: 1260,
-      height: 580,
+      height: 660,
       physics: {
         default: 'arcade',
         arcade: {
@@ -29,6 +30,7 @@ class BubbleGame extends React.Component {
       scene: [BubbleScene]
     };
     new Phaser.Game(config)
+
   }
 
   render() {

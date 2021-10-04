@@ -1,13 +1,34 @@
 import React from "react";
+import { connect } from "react-redux"
+import { setProductsThunk } from '../store/products'
+import Product from "./Product";
 
 class ShoppingMall extends React.Component {
+  componentDidMount() {
+    this.props.fetchProducts();
+  }
+
   render() {
+    const products = this.props.products || [];
     return (
       <div>
-        <h1>Here is the shopping mall</h1>
+        <div className="all-products">
+          {products.map((product) => (
+            <Product key={product.id} product={product} />
+          ))}
+        </div>
       </div>
-    )
+
+    );
   }
 }
 
-export default ShoppingMall
+const mapStateToProps = (state) => ({
+  products: state.products
+})
+
+const mapDispatchToProps = (dispatch) => ({
+  fetchProducts: () => dispatch(setProductsThunk())
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(ShoppingMall)
